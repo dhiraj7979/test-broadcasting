@@ -68,6 +68,58 @@ function initializeStreamingChannel() {
 }
 
 
+function streamOffer() {
+  let auth_user_id = 1;
+  axios.post('http://127.0.0.1:8000/api/stream-offer',
+   {
+    data:{
+      broadcaster: 1,
+      receiver: {
+        id: 1,
+        name: 'John'
+      },
+      offer: "test offer",
+    }
+  },
+    {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+        'Access-Control-Allow-Origin': '*',
+        "Content-Type": "application/json",
+      }
+
+    }
+  )
+  .then(res => {
+    console.log(res);
+  })
+  .catch(err => {
+    console.log(err);
+  })
+}
+
+
+function getUser() {
+  axios.post('http://localhost:8000/api/details', {
+    data: {
+      test: "test"
+    }
+  },
+  {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+      'Access-Control-Allow-Origin': '*',
+    }
+  })
+  .then(res => {
+    console.log(res);
+  })
+  .catch(err => {
+    console.log(err);
+  })
+}
+
+
 function Home() {
 
   return (
@@ -81,7 +133,15 @@ function Home() {
       <br />
       <br />
 
-      <button onClick={() => setup()}>Setup</button>
+      <button onClick={() => setup()}>Join presence channel</button>
+      <br />
+      <br />
+
+      <button onClick={() => streamOffer()}>Send Stream Offer</button>
+      <br />
+      <br />
+
+      <button onClick={() => getUser()}>Get User Details</button>
 
     </div>
   )
