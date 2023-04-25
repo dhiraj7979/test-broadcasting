@@ -8,11 +8,11 @@ import Pusher from 'pusher-js';
 
 function setupLogin() {
   axios.post('http://127.0.0.1:8000/api/login', {
-    email: 'johndoe@test.com',
+    email: 'john@mail.com',
     password: 'secret'
   })
   .then((res) => {
-    let token = res.data['authorization']['token'];
+    let token = res.data['token'];
     localStorage.setItem('accessToken', token);
     console.log("token set...")
   })
@@ -69,26 +69,25 @@ function initializeStreamingChannel() {
 
 
 function streamOffer() {
+  console.log("Running stream offer");
   let auth_user_id = 1;
   axios.post('http://127.0.0.1:8000/api/stream-offer',
-   {
-    data:{
-      broadcaster: 1,
-      receiver: {
-        id: 1,
-        name: 'John'
-      },
-      offer: "test offer",
-    }
+  {
+    broadcaster: 1,
+    receiver: {
+      id: 2,
+      name: 'John'
+    },
+    offer: "test offer",
   },
-    {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-        'Access-Control-Allow-Origin': '*',
-        "Content-Type": "application/json",
-      }
-
+  {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+      'Access-Control-Allow-Origin': '*',
+      "Content-Type": "application/json",
     }
+    
+  }
   )
   .then(res => {
     console.log(res);
@@ -96,15 +95,39 @@ function streamOffer() {
   .catch(err => {
     console.log(err);
   })
+  console.log("After stream offer");
+}
+
+
+function streamAnswer() {
+  console.log("Running stream offer");
+  let auth_user_id = 1;
+  axios.post('http://127.0.0.1:8000/api/stream-answer',
+  {
+    broadcaster: 1,
+    answer: "test answer",
+  },
+  {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+      'Access-Control-Allow-Origin': '*',
+      "Content-Type": "application/json",
+    }
+    
+  }
+  )
+  .then(res => {
+    console.log(res);
+  })
+  .catch(err => {
+    console.log(err);
+  })
+  console.log("After stream offer");
 }
 
 
 function getUser() {
-  axios.post('http://localhost:8000/api/details', {
-    data: {
-      test: "test"
-    }
-  },
+  axios.get('http://localhost:8000/api/getUser',
   {
     headers: {
       Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
@@ -117,6 +140,13 @@ function getUser() {
   .catch(err => {
     console.log(err);
   })
+}
+
+
+function joinChannel() {
+  window.Echo.private('stream-signal-channel.1').listen('.stream-answer', ({data})=> {
+    console.log('Answer from private channel ', data);
+  });
 }
 
 
@@ -142,6 +172,14 @@ function Home() {
       <br />
 
       <button onClick={() => getUser()}>Get User Details</button>
+      <br />
+      <br />
+
+      <button onClick={() => streamAnswer()}>Get User Details</button>
+      <br />
+      <br />
+
+      <button onClick={() => joinChannel()}>Join Channel</button>
 
     </div>
   )
